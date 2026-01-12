@@ -2655,7 +2655,7 @@ I. Dəyişən cərəyan elektrik mühərriki; II. Közərmə lampası; III. Elek
     "correct": "A"
   },
   {
-    "q": "Aşağıdakı mülahizələrdən hansı doğrudur? 
+    "q": "Aşağıdakı mülahizələrdən hansı doğrudur?"
 (I.Gücləndirmə əmsalı (k) gücləndiricinin vacib xarakteristikasıdır;  
 II. k=F(ω) asılılığı gücləndiricinin tezlik xarakteristikasıdır (burada ω – gücləndirilən siqnalın tezliyidir); 
 III. Sxemlərdə induktivlik və tutum elementlərinin olması gücləndiricilərdə faza təhriflərinə səbəb olur;  
@@ -2910,4 +2910,5 @@ V. Gücləndiricinin işçi tezlik diapazonu k əmsalının (1-6)dB arasında d�
     "correct": "B"
   }
 ]
+
 
