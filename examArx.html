@@ -1,144 +1,137 @@
 <!DOCTYPE html>
 <html lang="az">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crasher Online Sınaq Sistemi</title>
-    <style>
-        body { font-family: sans-serif; background-color: #f4f4f9; padding: 20px; line-height: 1.6; }
-        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: #333; }
-        #timer { position: sticky; top: 10px; background: #e74c3c; color: white; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold; z-index: 100; }
-        .question-block { margin-bottom: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; transition: 0.3s; }
-        .option { display: block; margin: 8px 0; cursor: pointer; padding: 8px; border-radius: 4px; border: 1px solid #eee; }
-        .option:hover { background: #f9f9f9; }
-        .correct-ans { border-left: 5px solid #2ecc71; background: #eafaf1; }
-        .wrong-ans { border-left: 5px solid #e74c3c; background: #fdf2f2; }
-        .skipped-ans { border-left: 5px solid #f1c40f; background: #fef9e7; }
-        button { display: block; width: 100%; padding: 12px; background: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin-top: 20px; }
-        button:hover { background: #2980b9; }
-        #result { margin-top: 30px; }
-    </style>
-</head>
-<body>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crasher Online Sınaq Sistemi</title>
 
+<style>
+body { font-family: sans-serif; background-color: #f4f4f9; padding: 20px; }
+.container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 10px; }
+#timer { background:#e74c3c; color:white; padding:10px; text-align:center; border-radius:5px; font-weight:bold; }
+.question-block { border:1px solid #ddd; padding:15px; margin:15px 0; border-radius:8px; }
+.option { display:block; margin:8px 0; cursor:pointer; }
+.correct-ans { background:#d4edda; }
+.wrong-ans { background:#f8d7da; }
+.skipped-ans { background:#fff3cd; }
+button { width:100%; padding:15px; font-size:18px; background:#2ecc71; color:white; border:none; border-radius:8px; cursor:pointer; }
+</style>
+</head>
+
+<body>
 <div class="container">
-    <h2>Crasher Dövrələr Nəzəriyyəsi Sınağı</h2>
-    <div id="timer">Qalan Vaxt: 30:00</div>
-    <div id="questions-container">Yüklənir...</div>
-    <button id="submit-btn" onclick="finishExam()">İmtahanı Bitir</button>
-    <div id="result"></div>
+<h2>Online Sınaq İmtahanı</h2>
+<div id="timer">Yüklənir...</div>
+<div id="quiz"></div>
+<button id="finishBtn" onclick="finish()">İmtahanı Bitir</button>
+<div id="result"></div>
 </div>
 
 <script>
-    let questions = [];
-    let startScore = 50;
-    let timeLeft = 1800; // 30 dəqiqə
+let TIME = 30 * 60;
+let interval;
+let startScore = 0;
+let currentQuestions = [];
+const QUESTIONS_URL = "QuestionsDvr.json"; // ✅ DÜZƏLDİ
 
-    // Timer funksiyası
-    const timerInterval = setInterval(() => {
-        let minutes = Math.floor(timeLeft / 60);
-        let seconds = timeLeft % 60;
-        document.getElementById("timer").innerHTML = `Qalan Vaxt: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-        if (timeLeft <= 0) {
-            clearInterval(timerInterval);
-            finishExam();
+function shuffle(arr) {
+    return arr.sort(() => Math.random() - 0.5);
+}
+
+async function start() {
+    const val = prompt("İmtahana giriş balın neçədir? (0–50)");
+    startScore = parseInt(val) || 0;
+
+    try {
+        const res = await fetch(QUESTIONS_URL);
+        let allQuestions = await res.json();
+
+        // ✅ DÜZƏLDİ: səhv olan [.allQuestions] silindi
+        currentQuestions = shuffle(allQuestions).slice(0, 25);
+
+        const quizDiv = document.getElementById("quiz");
+        quizDiv.innerHTML = "";
+
+        currentQuestions.forEach((q, i) => {
+            let optionsHtml = "";
+
+            q.options.forEach((opt, idx) => {
+                const label = String.fromCharCode(65 + idx);
+                optionsHtml += `
+                <label class="option">
+                    <input type="radio" name="q${i}" value="${idx}"> ${label}) ${opt}
+                </label>`;
+            });
+
+            optionsHtml += `
+            <label class="option">
+                <input type="radio" name="q${i}" value="BOS"> <b>Boşluq</b>
+            </label>`;
+
+            quizDiv.innerHTML += `
+            <div id="block${i}" class="question-block">
+                <p><b>${i + 1}. ${q.question}</b></p>
+                ${optionsHtml}
+                <div id="feedback${i}"></div>
+            </div>`;
+        });
+
+        interval = setInterval(updateTimer, 1000);
+
+    } catch (e) {
+        document.getElementById("quiz").innerHTML = "❌ JSON oxunmadı";
+        console.error(e);
+    }
+}
+
+function updateTimer() {
+    if (TIME <= 0) { finish(); return; }
+    TIME--;
+    let m = Math.floor(TIME / 60);
+    let s = TIME % 60;
+    document.getElementById("timer").innerText = `Qalan vaxt: ${m}:${s<10?'0'+s:s}`;
+}
+
+function finish() {
+    clearInterval(interval);
+    document.getElementById("finishBtn").style.display = "none";
+
+    let correct = 0, wrong = 0;
+
+    currentQuestions.forEach((q, i) => {
+        const sel = document.querySelector(`input[name="q${i}"]:checked`);
+        const block = document.getElementById(`block${i}`);
+        const fb = document.getElementById(`feedback${i}`);
+
+        if (!sel || sel.value === "BOS") {
+            block.classList.add("skipped-ans");
+            fb.innerHTML = `⚪ Boş | Düzgün: ${String.fromCharCode(65 + q.correct)}`;
+        } else if (parseInt(sel.value) === q.correct) {
+            correct++;
+            block.classList.add("correct-ans");
+            fb.innerHTML = "✅ Doğru (+2)";
+        } else {
+            wrong++;
+            block.classList.add("wrong-ans");
+            fb.innerHTML = `❌ Səhv (-1) | Düzgün: ${String.fromCharCode(65 + q.correct)}`;
         }
-        timeLeft--;
-    }, 1000);
+    });
 
-    // JSON-dan sualları çəkmək
-    fetch('QuestionsDvr.json')
-        .then(res => {
-            if (!res.ok) throw new Error("Fayl tapılmadı");
-            return res.json();
-        })
-        .then(data => {
-            questions = data; // Düzəldildi: questions = data
-            displayQuestions();
-        })
-        .catch(err => {
-            document.getElementById('questions-container').innerHTML = "Xəta: Məlumat yüklənmədi. JSON faylını yoxlayın.";
-            console.error(err);
-        });
+    const score = correct * 2 - wrong;
+    document.getElementById("result").innerHTML = `
+    <h3>Nəticə</h3>
+    Doğru: ${correct}<br>
+    Səhv: ${wrong}<br>
+    Sınaq Balı: ${score}<br>
+    <b>Yekun Bal: ${score + startScore}</b>`;
+}
 
-    function displayQuestions() {
-        const container = document.getElementById("questions-container");
-        container.innerHTML = "";
-        questions.forEach((q, i) => {
-            let optionsHTML = "";
-            for (let opt in q.options) {
-                optionsHTML += `
-                    <label class="option">
-                        <input type="radio" name="q${i}" value="${opt}"> ${opt}) ${q.options[opt]}
-                    </label>
-                `;
-            }
-            // Boş buraxma variantı
-            optionsHTML += `
-                <label class="option" style="color: #999;">
-                    <input type="radio" name="q${i}" value="BOS"> Boş burax
-                </label>
-            `;
-
-            container.innerHTML += `
-                <div class="question-block" id="block${i}">
-                    <p><strong>Sual ${i + 1}:</strong> ${q.q}</p>
-                    ${optionsHTML}
-                    <div id="feedback${i}"></div>
-                </div>
-            `;
-        });
-    }
-
-    function finishExam() {
-        clearInterval(timerInterval);
-        let correctCount = 0;
-        let wrongCount = 0;
-
-        questions.forEach((q, i) => {
-            const selected = document.querySelector(`input[name="q${i}"]:checked`);
-            const block = document.getElementById(`block${i}`);
-            const feedback = document.getElementById(`feedback${i}`);
-
-            if (selected) {
-                if (selected.value === q.correct) {
-                    correctCount++;
-                    block.classList.add("correct-ans");
-                    feedback.innerHTML = "<b>✅ Doğru (+2 bal)</b>";
-                } else if (selected.value === "BOS") {
-                    block.classList.add("skipped-ans");
-                    feedback.innerHTML = `<b>⚪ Boş buraxıldı.</b> Düzgün: ${q.correct}`;
-                } else {
-                    wrongCount++;
-                    block.classList.add("wrong-ans");
-                    feedback.innerHTML = `<b>❌ Səhv! (-1 bal).</b> Düzgün: ${q.correct}`;
-                }
-            } else {
-                block.classList.add("skipped-ans");
-                feedback.innerHTML = `<b>⚪ Cavabsız.</b> Düzgün: ${q.correct}`;
-            }
-        });
-
-        let examScore = (correctCount * 2) - (wrongCount * 1);
-        let total = startScore + examScore;
-        
-        document.getElementById("result").innerHTML = `
-            <div style="background:#2c3e50; color:white; padding:20px; border-radius:10px; text-align:center;">
-                <h2>Nəticə</h2>
-                <p>Doğru: ${correctCount} | Səhv: ${wrongCount}</p>
-                <p>Sınaq Balı: ${examScore}</p>
-                <h3 style="color:#f1c40f;">Ümumi Bal: ${total}</h3>
-                <button onclick="location.reload()" style="background:#e67e22;">Yenidən Başla</button>
-            </div>
-        `;
-        document.getElementById("submit-btn").style.display = "none";
-        window.scrollTo(0, document.body.scrollHeight);
-    }
+start();
 </script>
-
 </body>
 </html>
+
+
 
 
 
