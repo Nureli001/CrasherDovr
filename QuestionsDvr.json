@@ -2900,13 +2900,13 @@ V. Gücləndiricinin işçi tezlik diapazonu k əmsalının (1-6)dB arasında d�
     "correct": "B"
   },
   {
-    "q": "Elektrik birləşməsi olmayan dövrələrdə maqnit rabitə əmsalını artırmaq üçün hansı dəyişiklik edilir?",
+    "q": "Elektrik birləşməsi olmayan maqnit rabitəli dövrələrdə naqilsiz enerji ötürülməsi hansı sahədə daha çox istifadə olunur?",
     "options": {
-      "A": "Dövrələrin cərəyanı sabitləşdirilir",
-      "B": "Xarici elektrik sahəsi yaradılır",
-      "C": "Maqnit keçirici material əlavə edilir",
-      "D": "Dövrələrin ölçüləri artırılır"
+      "A": "Elektrik mühərrikləri",
+      "B": "Tibbi implantlar və elektronika",
+      "C": "Transformator qurğuları",
+      "D": "Yüksək gərginlik xətləri"
     },
-    "correct": "C"
-  },
+    "correct": "B"
+  }
 ]
