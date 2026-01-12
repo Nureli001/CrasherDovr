@@ -2304,7 +2304,7 @@ I. Dəyişən cərəyan elektrik mühərriki; II. Közərmə lampası; III. Elek
     "correct": "D"
   },
   {
-    "q": "Aşağıda göstərilənlərdən neçəsi xalis aktiv güc tələb etmir? 
+    "q": "Aşağıda göstərilənlərdən neçəsi xalis aktiv güc tələb etmir?" 
 (I. Dəyişən cərəyan elektrik mühərriki; II. Közərmə lampası; III. Elektrik qızdırıcısı; IV. Rezistor; V. Kondensator.)",
     "options": {
       "A": "II",
@@ -2910,3 +2910,4 @@ V. Gücləndiricinin işçi tezlik diapazonu k əmsalının (1-6)dB arasında d�
     "correct": "B"
   }
 ]
+
