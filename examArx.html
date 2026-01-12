@@ -32,7 +32,8 @@ let TIME = 30 * 60;
 let interval;
 let startScore = 0;
 let currentQuestions = [];
-const QUESTIONS_URL = "QuestionsDvr.json"; // ✅ DÜZƏLDİ
+// Fayl adını bura uyğunlaşdırdım
+const QUESTIONS_URL = "QuestionsDvr.json"; 
 
 function shuffle(arr) {
     return arr.sort(() => Math.random() - 0.5);
@@ -46,7 +47,6 @@ async function start() {
         const res = await fetch(QUESTIONS_URL);
         let allQuestions = await res.json();
 
-        // ✅ DÜZƏLDİ: səhv olan [.allQuestions] silindi
         currentQuestions = shuffle(allQuestions).slice(0, 25);
 
         const quizDiv = document.getElementById("quiz");
@@ -55,13 +55,13 @@ async function start() {
         currentQuestions.forEach((q, i) => {
             let optionsHtml = "";
 
-            q.options.forEach((opt, idx) => {
-                const label = String.fromCharCode(65 + idx);
+            // JSON-dakı obyekt variantlarını (A, B, C, D) dövrə salırıq
+            for (let key in q.options) {
                 optionsHtml += `
                 <label class="option">
-                    <input type="radio" name="q${i}" value="${idx}"> ${label}) ${opt}
+                    <input type="radio" name="q${i}" value="${key}"> ${key}) ${q.options[key]}
                 </label>`;
-            });
+            }
 
             optionsHtml += `
             <label class="option">
@@ -70,7 +70,7 @@ async function start() {
 
             quizDiv.innerHTML += `
             <div id="block${i}" class="question-block">
-                <p><b>${i + 1}. ${q.question}</b></p>
+                <p><b>${i + 1}. ${q.q}</b></p> 
                 ${optionsHtml}
                 <div id="feedback${i}"></div>
             </div>`;
@@ -79,7 +79,7 @@ async function start() {
         interval = setInterval(updateTimer, 1000);
 
     } catch (e) {
-        document.getElementById("quiz").innerHTML = "❌ JSON oxunmadı";
+        document.getElementById("quiz").innerHTML = "❌ JSON oxunmadı. Fayl adının QuestionsDvr.json olduğundan əmin olun.";
         console.error(e);
     }
 }
@@ -105,15 +105,15 @@ function finish() {
 
         if (!sel || sel.value === "BOS") {
             block.classList.add("skipped-ans");
-            fb.innerHTML = `⚪ Boş | Düzgün: ${String.fromCharCode(65 + q.correct)}`;
-        } else if (parseInt(sel.value) === q.correct) {
+            fb.innerHTML = `⚪ Boş | Düzgün: ${q.correct}`;
+        } else if (sel.value === q.correct) { // Hərfləri birbaşa müqayisə edirik
             correct++;
             block.classList.add("correct-ans");
             fb.innerHTML = "✅ Doğru (+2)";
         } else {
             wrong++;
             block.classList.add("wrong-ans");
-            fb.innerHTML = `❌ Səhv (-1) | Düzgün: ${String.fromCharCode(65 + q.correct)}`;
+            fb.innerHTML = `❌ Səhv (-1) | Düzgün: ${q.correct}`;
         }
     });
 
@@ -130,6 +130,7 @@ start();
 </script>
 </body>
 </html>
+
 
 
 
