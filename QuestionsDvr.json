@@ -1972,9 +1972,7 @@
     "correct": "C"
   },  
  {
-    "q": "Aşağıda göstərilənlərdən hansı xalis aktiv güc tələb edir? 
-
-I. Dəyişən cərəyan elektrik mühərriki; II. Közərmə lampası; III. Elektrik qızdırıcısı; IV. Selenoid; V. Kondensator",
+    "q": "Aşağıda göstərilənlərdən hansı xalis aktiv güc tələb edir?(I. Dəyişən cərəyan elektrik mühərriki; II. Közərmə lampası; III. Elektrik qızdırıcısı; IV. Selenoid; V. Kondensator,"
     "options": {
       "A": "III",
       "B": "IV ",
@@ -2910,5 +2908,6 @@ V. Gücləndiricinin işçi tezlik diapazonu k əmsalının (1-6)dB arasında d�
     "correct": "B"
   }
 ]
+
 
 
